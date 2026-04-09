@@ -28,7 +28,6 @@ export default function Projects() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const lockControls = useAnimation();
 
-  // Build full projects array combining metadata + translations
   const sideProjects = sideProjectsMeta.map((meta) => {
     const content = meta.id === "budgents" ? t.projects.budgents : t.projects.nutriops;
     return { ...meta, ...content };
@@ -84,9 +83,10 @@ export default function Projects() {
     if (!email) return;
     const subject = encodeURIComponent("Interesado en Symbiosis AI");
     const body = encodeURIComponent(
-      `Hola Matias,\n\nMe gustaria recibir novedades sobre Symbiosis AI.\n\nMi email: ${email}\n\nGracias!`
+      `Hola Matías,\n\nMe gustaría recibir novedades sobre Symbiosis AI.\n\nMi email: ${email}\n\nGracias!`
     );
-    window.location.href = `mailto:rbellidomatias@gmail.com?subject=${subject}&body=${body}`;
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=rbellidomatias@gmail.com&su=${subject}&body=${body}`;
+    window.open(gmailUrl, "_blank");
     setTimeout(() => {
       setModalOpen(false);
       setEmail("");
@@ -111,6 +111,7 @@ export default function Projects() {
               src="/projects/Imagenes/symbiosis.png"
               alt="Symbiosis AI"
               fill
+              quality={80}
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
@@ -205,6 +206,8 @@ export default function Projects() {
                   src={project.image}
                   alt={project.title}
                   fill
+                  quality={80}
+                  loading="lazy"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
@@ -278,6 +281,7 @@ export default function Projects() {
                       src={expandedProject.image}
                       alt={expandedProject.title}
                       fill
+                      quality={90}
                       sizes="(max-width: 1024px) 100vw, 1024px"
                       className="object-contain"
                       priority

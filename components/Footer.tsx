@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, MapPin, Linkedin, Github, MessageCircle, ArrowUpRight } from "lucide-react";
+import { Mail, MapPin, Linkedin, Github, Phone, ArrowUpRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 const GMAIL_COMPOSE_URL =
@@ -94,12 +94,12 @@ export default function Footer() {
             className="glass p-3 rounded-full hover:text-cyan hover:shadow-glow transition-all"
             aria-label="WhatsApp"
           >
-            <MessageCircle className="w-5 h-5" />
+            <Phone className="w-5 h-5" />
           </a>
         </div>
 
         <p className="text-sm text-fg-faint mt-12">
-          (c) 2026 Matías Bellido - Optimizing Reality.
+          Portfolio - Matías Rodrigo Bellido
         </p>
       </div>
     </footer>

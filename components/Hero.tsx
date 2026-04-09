@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Sparkles, ArrowDown, Linkedin, Github, MessageCircle } from "lucide-react";
+import { Sparkles, ArrowDown, Linkedin, Github, Phone } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function Hero() {
@@ -23,6 +23,7 @@ export default function Hero() {
               alt="Matías Bellido"
               fill
               priority
+              quality={90}
               sizes="(max-width: 768px) 90vw, 384px"
               className="object-cover object-top scale-90"
             />
@@ -54,7 +55,7 @@ export default function Hero() {
               aria-label="WhatsApp"
               className="glass p-3 rounded-full hover:text-cyan hover:shadow-glow transition-all"
             >
-              <MessageCircle className="w-5 h-5" />
+              <Phone className="w-5 h-5" />
             </a>
           </div>
 
