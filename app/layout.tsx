@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { LanguageProvider } from "@/context/LanguageContext";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,14 +16,9 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Matías Bellido — Optimizing Reality through Data & AI",
+  title: "Matias Bellido — Optimizing Reality through Data & AI",
   description:
-    "Actuario & Data Scientist. Automatización, modelos estadísticos y ejecución con IA.",
-  openGraph: {
-    title: "Matías Bellido — Data & AI",
-    description: "Optimizing Reality through Data & AI",
-    type: "website",
-  },
+    "Actuario & Data Scientist. Automatizacion, modelos estadisticos y ejecucion con IA.",
 };
 
 export default function RootLayout({
@@ -31,9 +27,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${inter.variable} ${spaceGrotesk.variable}`}>
-      <body className="bg-black text-white font-sans antialiased">
-        {children}
+    <html lang="es" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable}`}>
+      <body className="font-sans antialiased">
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );
