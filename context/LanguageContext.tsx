@@ -13,18 +13,6 @@
    IMPORTANTE: Si modificás un texto en español, también debés modificar
    el equivalente en inglés (más abajo en el archivo) para que la traducción
    funcione correctamente.
-
-   SECCIONES DENTRO DE CADA IDIOMA:
-   1. nav         → Botones del menú superior (Inicio, Habilidades, etc.)
-   2. hero        → Sección de presentación con tu foto y nombre
-   3. bio         → Sección de habilidades + cita personal (manifesto)
-   4. experience  → Tu experiencia laboral y educación
-   5. projects    → Symbiosis AI, Budgents, NutriOps
-   6. footer      → Sección "Colaboremos" del final
-
-   COMO BUSCAR ALGO RAPIDO:
-   - Usá Ctrl+F en VSCode y buscá una palabra del texto que querés cambiar
-   - O navegá con los comentarios en MAYUSCULAS que dividen secciones
    ============================================================================ */
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
@@ -95,6 +83,9 @@ type Dict = {
   projects: {
     eyebrow: string;
     title: string;
+    sectionDesc: string;
+    digitalSubtitle: string;
+    businessSubtitle: string;
     symbiosis: {
       status: string;
       building: string;
@@ -105,6 +96,8 @@ type Dict = {
     };
     budgents: ProjectItem;
     nutriops: ProjectItem;
+    imports: ProjectItem;
+    asesoramientos: ProjectItem;
     modal: {
       title: string;
       desc: string;
@@ -128,7 +121,6 @@ export const translations: Record<Lang, Dict> = {
   // ESPAÑOL
   // ==========================================================================
   es: {
-    // ───────────────── MENÚ SUPERIOR ─────────────────
     nav: {
       home: "Inicio",
       skills: "Habilidades",
@@ -136,8 +128,6 @@ export const translations: Record<Lang, Dict> = {
       projects: "Proyectos",
       contact: "Contacto",
     },
-
-    // ───────────────── SECCIÓN HERO (presentación) ─────────────────
     hero: {
       badge: "Actuario & Data Scientist",
       titleLine1: "Hola! Soy",
@@ -146,8 +136,6 @@ export const translations: Record<Lang, Dict> = {
       ctaProjects: "Ver Proyectos",
       ctaAbout: "Sobre mí",
     },
-
-    // ───────────────── SECCIÓN BIO (habilidades + cita) ─────────────────
     bio: {
       eyebrow: "Matías Rodrigo Bellido",
       title: "Habilidades",
@@ -161,20 +149,13 @@ export const translations: Record<Lang, Dict> = {
       manifesto:
         "Creo que la teoría solo cobra sentido cuando se convierte en una solución. Soy estudiante de Actuario y autodidacta en Data Science porque me apasiona entender el por qué de las cosas, y me motiva mucho más construir el cómo. Mi enfoque es simple: combinar el rigor estadístico con distintas herramientas para que los datos dejen de ser ruido y pasen a ser decisiones estratégicas.",
     },
-
-    // ───────────────── SECCIÓN EXPERIENCIA & EDUCACIÓN ─────────────────
     experience: {
       eyebrow: "Journey",
       title: "Experiencia & Educación",
       experienceTitle: "Experiencia",
       educationTitle: "Educación",
       coursesTitle: "Formación Complementaria",
-
-      // ============ EXPERIENCIA LABORAL ============
-      // Para agregar/quitar/editar trabajos, modificá este array.
-      // Cada objeto es UN trabajo. Mantené el orden cronológico inverso (más reciente primero).
       items: [
-        // ─── TRABAJO #1: Tutor Académico ───
         {
           period: "Abr 2024 - Actualidad",
           role: "Tutor Académico Particular",
@@ -183,7 +164,6 @@ export const translations: Record<Lang, Dict> = {
           desc: "Coordino un staff de docentes que cubre demanda en niveles primario, secundario y universitario. Dicto clases avanzadas de Análisis Matemático, Álgebra Lineal y Estadística Descriptiva (UBA CBC y Primer Año), traduciendo conceptos abstractos al ritmo de cada alumno.",
           tags: ["Liderazgo", "Docencia", "Gestión de equipo"],
         },
-        // ─── TRABAJO #2: Personal Trainer ───
         {
           period: "Jun 2023 - Actualidad",
           role: "Personal Trainer & Wellness Coach",
@@ -192,7 +172,6 @@ export const translations: Record<Lang, Dict> = {
           desc: "Gestión integral de cartera de clientes con planificación basada en datos. Diseño mesociclos ajustando volumen e intensidad según KPIs físicos semanales. Establezco métricas claras y monitoreo evolución para garantizar adherencia y resultados.",
           tags: ["KPIs", "Planificación estratégica", "Retención"],
         },
-        // ─── TRABAJO #3: Arcos Dorados ───
         {
           period: "Dic 2024 - Nov 2025",
           role: "Customer Experience",
@@ -201,7 +180,6 @@ export const translations: Record<Lang, Dict> = {
           desc: "Experiencia laboral intensiva en un entorno corporativo de altos estándares operativos. Ejecución precisa de procesos estandarizados bajo métricas de tiempo y eficiencia, resolución de problemas en momentos de alta demanda y coordinación constante con el staff.",
           tags: ["Operaciones", "Trabajo en equipo", "Alta presión"],
         },
-        // ─── TRABAJO #4: SomeClub ───
         {
           period: "Ago 2024 - Dic 2024",
           role: "Gerente de Desarrollo de Negocio",
@@ -210,7 +188,6 @@ export const translations: Record<Lang, Dict> = {
           desc: "Rol enfocado en prospección estratégica y calificación de leads para el equipo de ventas. Administración y actualización de bases de datos en CRM, análisis de funnels (tasa de respuesta, agendamiento) y comunicación B2B/B2C identificando puntos de dolor en clientes potenciales.",
           tags: ["CRM", "Análisis de funnels", "B2B/B2C"],
         },
-        // ─── TRABAJO #5: FIAT Argentina ───
         {
           period: "Feb 2024 - Abr 2024",
           role: "Consultor Comercial",
@@ -219,7 +196,6 @@ export const translations: Record<Lang, Dict> = {
           desc: "Gestión integral del ciclo de ventas y asesoramiento comercial en el sector automotriz, enfocado en cumplimiento de objetivos mensuales y satisfacción del cliente. Cierre mediante técnicas de negociación consultiva y manejo de objeciones.",
           tags: ["Negociación", "Sales", "KPIs comerciales"],
         },
-        // ─── TRABAJO #6: Fundación Apolo ───
         {
           period: "Ago 2023 - Dic 2023",
           role: "Asistente de Investigación (Pasante)",
@@ -229,10 +205,7 @@ export const translations: Record<Lang, Dict> = {
           tags: ["Investigación", "Políticas públicas", "Research"],
         },
       ],
-
-      // ============ EDUCACIÓN ============
       education: [
-        // ─── EDUCACIÓN #1: UBA ───
         {
           period: "Abr 2023 - Oct 2028",
           institution: "Universidad de Buenos Aires",
@@ -241,7 +214,6 @@ export const translations: Record<Lang, Dict> = {
           longDesc:
             "Foco académico en Métodos Cuantitativos, Estadística Matemática y Macroeconomía. Investigación independiente en Data Science y aplicación de algoritmos (Python/R) a modelos actuariales. Enfoque en la integración de modelos matemáticos con herramientas computacionales y análisis de procesos de negocio.\n\nProyecto Destacado: Matemática Aplicada I (Modelado Computacional)\n• Desarrollo de algoritmo en Python utilizando la librería NumPy para el cálculo automatizado de autovalores y autovectores.\n• Implementación práctica de conceptos de Álgebra Lineal para optimizar el análisis de matrices y sistemas de ecuaciones.\n\nProyecto Destacado: Sistemas Administrativos (Caso Real: Dar Sentido S.R.L.)\n• Consultoría de Procesos: Diagnóstico y rediseño del circuito de Abastecimiento/Compras en una Empresa B certificada, utilizando diagramas de interdependencia sectorial.\n• Gestión de Riesgos y Control Interno: Detección de falencias en la segregación de funciones y diseño de un nuevo marco de control preventivo y documental.\n• Análisis Organizacional: Evaluación de la estructura y mecanismos de coordinación para optimizar la toma de decisiones estratégicas.",
         },
-        // ─── EDUCACIÓN #2: Colegio Santa Teresa de Jesús ───
         {
           period: "Mar 2018 - Nov 2023",
           institution: "Colegio Santa Teresa de Jesús",
@@ -257,8 +229,11 @@ export const translations: Record<Lang, Dict> = {
     projects: {
       eyebrow: "Work",
       title: "Proyectos",
+      sectionDesc:
+        "Mi enfoque profesional no se limita a una herramienta, sino a una mentalidad: la optimización de resultados. En este espacio conviven dos mundos que se retroalimentan. Por un lado, el desarrollo de soluciones tecnológicas y automatizaciones diseñadas para escalar procesos. Por el otro, la gestión estratégica de negocios y desarrollo humano, donde aplico la disciplina, el liderazgo de equipos y la optimización de recursos —ya sea en el ámbito académico, comercial o del rendimiento físico— para transformar objetivos en realidades medibles.",
+      digitalSubtitle: "Soluciones Digitales & IA",
+      businessSubtitle: "Operaciones de Negocio",
 
-      // ============ PROYECTO FLAGSHIP: SYMBIOSIS AI ============
       symbiosis: {
         status: "Status",
         building: "Building",
@@ -268,7 +243,6 @@ export const translations: Record<Lang, Dict> = {
         desc: "Tras encuestar a +80 estudiantes universitarios en CABA de entre 17-28 años, identifiqué una frustración constante: el miedo a quedar obsoletos frente a las herramientas que exige el mercado laboral actual. SymbiosisAI nace para cerrar esa brecha. No es solo una plataforma de estudio, es un ecosistema que enseña material de estudio universitario a través de la programación y el uso de tecnología real. Monitorea el progreso en tiempo real y ajusta el plan de aprendizaje para que el estudiante no solo apruebe sus materias, sino que domine las herramientas que lo harán competitivo el día de mañana.",
       },
 
-      // ============ SIDE PROJECT #1: BUDGENTS ============
       budgents: {
         date: "May 2025",
         category: "Automatización - +3 PYMEs",
@@ -276,7 +250,6 @@ export const translations: Record<Lang, Dict> = {
         desc: "Desarrollo de ecosistemas para escalar la atención al cliente sin perder calidad, permitiendo el foco en actividades de alto impacto. Evolucioné de Make a n8n para maximizar la flexibilidad técnica e integrar un mayor volumen de APIs. La solución automatiza el primer contacto, la calificación de leads y el agendamiento para PYMEs y marcas personales. Mediante webhooks e integración con Supabase, toda la data se registra y organiza automáticamente en tiempo real para un seguimiento estratégico impecable.",
       },
 
-      // ============ SIDE PROJECT #2: NUTRIOPS ============
       nutriops: {
         date: "Dic 2025",
         category: "Operations Research - Fitness",
@@ -284,7 +257,22 @@ export const translations: Record<Lang, Dict> = {
         desc: "Uno de mis side-hustle es ser personal trainer, y muchos clientes me plantean la misma situación: no saben cómo hacer bien las compras de supermercado para seguir su alimentación sin gastar de más. Por eso creé NutriOps, un modelo de programación lineal que maximiza el rendimiento nutricional bajo restricciones presupuestarias. El sistema se alimenta de un pipeline de web scraping desarrollado para extraer, en tiempo real, precios y stock de las principales cadenas de supermercados en CABA. Mediante Excel Solver, el modelo procesa esta data para generar la combinación óptima de alimentos al menor costo posible.",
       },
 
-      // ============ MODAL DE EMAIL DE SYMBIOSIS ============
+      // ============ OPERACIONES DE NEGOCIO: IMPORTS BELLIDO ============
+      imports: {
+        date: "Marzo 2025",
+        category: "Importaciones - E-commerce",
+        title: "Imports Bellido",
+        desc: "Lo que comenzó en el nicho de la perfumería evolucionó hacia un servicio de importaciones minoristas 100% bajo pedido, eliminando costos operativos de stock y maximizando la eficiencia del capital. Mi enfoque central es conectar el mercado de Estados Unidos con el público local, garantizando precios competitivos mediante el análisis de ofertas internacionales.\n\nMi valor agregado no termina ahí: también optimizo la adquisición de productos nacionales. Me encargo de rastrear los mejores precios locales contactando directamente con proveedores para evitar sobrecostos de intermediarios. Me especializo en detectar oportunidades de ahorro en cualquier categoría y negociar condiciones ventajosas, logrando un equilibrio real entre la logística estratégica y la inteligencia financiera.",
+      },
+
+      // ============ OPERACIONES DE NEGOCIO: BELLIDO ASESORAMIENTOS ============
+      asesoramientos: {
+        date: "Junio 2023",
+        category: "Coaching & Educación",
+        title: "Bellido Asesoramientos",
+        desc: "Este proyecto nació de una necesidad personal de progreso y una vocación natural por la enseñanza. Comencé ayudando a otros jóvenes a dar sus primeros pasos en el gimnasio; lo que empezó como una búsqueda de mis primeros ingresos, se transformó rápidamente en un servicio con resultados reales que me llevó a profesionalizarme con certificaciones de la IFBB.\n\nEn este proceso, identifiqué una problemática común: el momento más crítico es el inicio. La falta de guía al empezar un hábito o una materia es lo que suele llevar al abandono. Por eso, en agosto de 2023, decidí expandir esta filosofía al ámbito académico para atacar el mismo problema desde otro ángulo.\n\nAcompañamiento Integral:\n• Diseñé un servicio que ayuda a los estudiantes a navegar el comienzo de sus cursos universitarios.\n• Brindo apoyo emocional y motivación hasta planificaciones de estudio personalizadas.\n\nGestión & Delegación:\n• Para asegurar el éxito de cada alumno, lidero y coordino a un equipo de profesores.\n• Los asigno estratégicamente según el perfil y la necesidad de cada estudiante.\n\nDominio Técnico:\n• Mantengo el dictado personal de las materias de mayor complejidad lógica (Análisis, Álgebra, Estadística).\n• Aseguro que la transición entre la incertidumbre inicial y la aprobación de la materia sea un proceso fluido y eficiente.",
+      },
+
       modal: {
         title: "Quiero ser parte",
         desc: "Symbiosis AI está en construcción. Dejame tu email y te aviso cuando lance.",
@@ -293,7 +281,6 @@ export const translations: Record<Lang, Dict> = {
       },
     },
 
-    // ───────────────── SECCIÓN FOOTER (Colaboremos) ─────────────────
     footer: {
       eyebrow: "Contacto",
       title: "Colaboremos",
@@ -309,7 +296,6 @@ export const translations: Record<Lang, Dict> = {
   // INGLÉS (ENGLISH)
   // ==========================================================================
   en: {
-    // ───────────────── TOP NAV MENU ─────────────────
     nav: {
       home: "Home",
       skills: "Skills",
@@ -317,8 +303,6 @@ export const translations: Record<Lang, Dict> = {
       projects: "Projects",
       contact: "Contact",
     },
-
-    // ───────────────── HERO SECTION ─────────────────
     hero: {
       badge: "Actuary & Data Scientist",
       titleLine1: "Hi! I'm",
@@ -327,8 +311,6 @@ export const translations: Record<Lang, Dict> = {
       ctaProjects: "View Projects",
       ctaAbout: "About me",
     },
-
-    // ───────────────── BIO SECTION ─────────────────
     bio: {
       eyebrow: "Matías Rodrigo Bellido",
       title: "Skills",
@@ -342,15 +324,12 @@ export const translations: Record<Lang, Dict> = {
       manifesto:
         "I believe theory only makes sense when it turns into a solution. I'm an Actuarial student and self-taught Data Scientist because I'm passionate about understanding the why of things, and even more motivated to build the how. My approach is simple: combine statistical rigor with different tools so that data stops being noise and becomes strategic decisions.",
     },
-
-    // ───────────────── EXPERIENCE & EDUCATION SECTION ─────────────────
     experience: {
       eyebrow: "Journey",
       title: "Experience & Education",
       experienceTitle: "Experience",
       educationTitle: "Education",
       coursesTitle: "Complementary Training",
-
       items: [
         {
           period: "Apr 2024 - Present",
@@ -401,7 +380,6 @@ export const translations: Record<Lang, Dict> = {
           tags: ["Research", "Public Policy", "Analysis"],
         },
       ],
-
       education: [
         {
           period: "Apr 2023 - Oct 2028",
@@ -421,13 +399,14 @@ export const translations: Record<Lang, Dict> = {
         },
       ],
     },
-
-    // ───────────────── PROJECTS SECTION ─────────────────
     projects: {
       eyebrow: "Work",
       title: "Projects",
+      sectionDesc:
+        "My professional approach is not limited to one tool, but to a mindset: results optimization. In this space, two mutually reinforcing worlds coexist. On one side, the development of technological solutions and automations designed to scale processes. On the other, the strategic management of business and human development, where I apply discipline, team leadership, and resource optimization —whether in the academic, commercial, or physical performance domain— to transform objectives into measurable realities.",
+      digitalSubtitle: "Digital Solutions & AI",
+      businessSubtitle: "Business Ops & Logic Models",
 
-      // ============ FLAGSHIP PROJECT: SYMBIOSIS AI ============
       symbiosis: {
         status: "Status",
         building: "Building",
@@ -437,7 +416,6 @@ export const translations: Record<Lang, Dict> = {
         desc: "After surveying 80+ university students in Buenos Aires aged 17-28, I identified a constant frustration: the fear of becoming obsolete against the tools demanded by today's job market. SymbiosisAI was born to close that gap. It's not just a study platform, it's an ecosystem that teaches university material through programming and the use of real technology. It monitors progress in real time and adjusts the learning plan so that students don't just pass their courses, but master the tools that will make them competitive tomorrow.",
       },
 
-      // ============ SIDE PROJECT #1: BUDGENTS ============
       budgents: {
         date: "May 2025",
         category: "Automation - 3+ SMBs",
@@ -445,12 +423,25 @@ export const translations: Record<Lang, Dict> = {
         desc: "Building ecosystems to scale customer service without losing quality, freeing teams to focus on high-impact work. I evolved from Make to n8n to maximize technical flexibility and integrate more APIs. The solution automates first contact, lead qualification, and scheduling for SMBs and personal brands. Through webhooks and Supabase integration, all data is captured and organized automatically in real time for impeccable strategic follow-up.",
       },
 
-      // ============ SIDE PROJECT #2: NUTRIOPS ============
       nutriops: {
         date: "Dec 2025",
         category: "Operations Research - Fitness",
         title: "NutriOps",
         desc: "One of my side-hustles is being a personal trainer, and many clients face the same problem: they don't know how to grocery shop efficiently to follow their nutrition plan without overspending. That's why I built NutriOps, a linear programming model that maximizes nutritional performance under budget constraints. The system is fed by a web scraping pipeline that extracts, in real time, prices and stock from the main supermarket chains in Buenos Aires. Through Excel Solver, the model processes this data to generate the optimal food combination at the lowest possible cost.",
+      },
+
+      imports: {
+        date: "March 2025",
+        category: "Imports - E-commerce",
+        title: "Imports Bellido",
+        desc: "What started in the perfumery niche evolved into a 100% on-demand retail import service, eliminating stock operating costs and maximizing capital efficiency. My core focus is connecting the United States market with the local audience, ensuring competitive prices through the analysis of international offers.\n\nMy value-add doesn't end there: I also optimize the acquisition of domestic products. I track the best local prices by contacting suppliers directly to avoid intermediary markups. I specialize in detecting savings opportunities across any category and negotiating advantageous conditions, achieving a real balance between strategic logistics and financial intelligence.",
+      },
+
+      asesoramientos: {
+        date: "June 2023",
+        category: "Coaching & Education",
+        title: "Bellido Asesoramientos",
+        desc: "This project was born out of a personal need for progress and a natural vocation for teaching. I started by helping other young people take their first steps at the gym; what began as a search for my first income quickly transformed into a service with real results that led me to professionalize myself with IFBB certifications.\n\nIn this process, I identified a common problem: the most critical moment is the beginning. The lack of guidance when starting a habit or a subject is what usually leads to abandonment. That's why, in August 2023, I decided to expand this philosophy to the academic field to attack the same problem from another angle.\n\nIntegral Support:\n• I designed a service that helps students navigate the start of their university courses.\n• I provide emotional support and motivation through to personalized study planning.\n\nManagement & Delegation:\n• To ensure the success of each student, I lead and coordinate a team of teachers.\n• I strategically assign them according to the profile and needs of each student.\n\nTechnical Mastery:\n• I personally teach the most logically complex subjects (Analysis, Algebra, Statistics).\n• I ensure that the transition from initial uncertainty to passing the subject is a smooth and efficient process.",
       },
 
       modal: {
@@ -460,8 +451,6 @@ export const translations: Record<Lang, Dict> = {
         button: "Notify me",
       },
     },
-
-    // ───────────────── FOOTER SECTION ─────────────────
     footer: {
       eyebrow: "Contact",
       title: "Let's Collaborate",
