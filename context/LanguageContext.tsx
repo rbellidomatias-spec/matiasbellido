@@ -270,7 +270,7 @@ export const translations: Record<Lang, Dict> = {
 
       // ============ SIDE PROJECT #1: BUDGENTS ============
       budgents: {
-        date: "Abr - Dic 2025",
+        date: "May 2025",
         category: "Automatización - +3 PYMEs",
         title: "Budgents - AI Agents",
         desc: "Desarrollo de ecosistemas para escalar la atención al cliente sin perder calidad, permitiendo el foco en actividades de alto impacto. Evolucioné de Make a n8n para maximizar la flexibilidad técnica e integrar un mayor volumen de APIs. La solución automatiza el primer contacto, la calificación de leads y el agendamiento para PYMEs y marcas personales. Mediante webhooks e integración con Supabase, toda la data se registra y organiza automáticamente en tiempo real para un seguimiento estratégico impecable.",
@@ -439,7 +439,7 @@ export const translations: Record<Lang, Dict> = {
 
       // ============ SIDE PROJECT #1: BUDGENTS ============
       budgents: {
-        date: "Apr - Dec 2025",
+        date: "May 2025",
         category: "Automation - 3+ SMBs",
         title: "Budgents - AI Agents",
         desc: "Building ecosystems to scale customer service without losing quality, freeing teams to focus on high-impact work. I evolved from Make to n8n to maximize technical flexibility and integrate more APIs. The solution automates first contact, lead qualification, and scheduling for SMBs and personal brands. Through webhooks and Supabase integration, all data is captured and organized automatically in real time for impeccable strategic follow-up.",
