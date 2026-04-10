@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
-import { Lock, Clock, X, Mail } from "lucide-react";
+import { Lock, Clock, X, Mail, Languages } from "lucide-react";
 import Section from "./Section";
 import { useLanguage } from "@/context/LanguageContext";
+import { useModal } from "@/context/ModalContext";
 
 const sideProjectsMeta = [
   {
@@ -21,8 +22,9 @@ const sideProjectsMeta = [
 ];
 
 export default function Projects() {
-  const { t } = useLanguage();
-  const [modalOpen, setModalOpen] = useState(false);
+  const { t, lang, setLang } = useLanguage();
+  const { setModalOpen: setGlobalModalOpen } = useModal();
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [email, setEmail] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -33,11 +35,16 @@ export default function Projects() {
     return { ...meta, ...content };
   });
 
+  // Sync local modal state with global context
+  useEffect(() => {
+    setGlobalModalOpen(expandedId !== null || emailModalOpen);
+  }, [expandedId, emailModalOpen, setGlobalModalOpen]);
+
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setExpandedId(null);
-        setModalOpen(false);
+        setEmailModalOpen(false);
       }
     };
     window.addEventListener("keydown", handleEsc);
@@ -45,7 +52,7 @@ export default function Projects() {
   }, []);
 
   useEffect(() => {
-    if (expandedId || modalOpen) {
+    if (expandedId || emailModalOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -53,7 +60,7 @@ export default function Projects() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [expandedId, modalOpen]);
+  }, [expandedId, emailModalOpen]);
 
   useEffect(() => {
     if (!clicked) {
@@ -73,7 +80,7 @@ export default function Projects() {
       transition: { duration: 0.5, ease: "easeInOut" },
     });
     setTimeout(() => {
-      setModalOpen(true);
+      setEmailModalOpen(true);
       setClicked(false);
     }, 100);
   };
@@ -88,11 +95,17 @@ export default function Projects() {
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=rbellidomatias@gmail.com&su=${subject}&body=${body}`;
     window.open(gmailUrl, "_blank");
     setTimeout(() => {
-      setModalOpen(false);
+      setEmailModalOpen(false);
       setEmail("");
     }, 500);
   };
 
+  // In-place language toggle: just changes the language, modal stays open
+  const handleModalLangToggle = () => {
+    setLang(lang === "es" ? "en" : "es");
+  };
+
+  // Compute expanded project from CURRENT lang (re-evaluates on language change)
   const expandedProject = sideProjects.find((p) => p.id === expandedId);
 
   return (
@@ -104,7 +117,7 @@ export default function Projects() {
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
           onClick={handleLockClick}
-          className="relative glass rounded-2xl overflow-hidden cursor-pointer group min-h-[600px] flex flex-col"
+          className="relative glass rounded-2xl overflow-hidden cursor-pointer group min-h-[500px] lg:min-h-[600px] flex flex-col touch-manipulation"
         >
           <div className="absolute inset-0">
             <Image
@@ -163,11 +176,11 @@ export default function Projects() {
             </p>
           </div>
 
-          <div className="relative z-20 p-8 border-t border-white/10 bg-black/40 backdrop-blur-sm">
+          <div className="relative z-20 p-6 md:p-8 border-t border-white/10 bg-black/40 backdrop-blur-sm">
             <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 mb-2">
               {t.projects.symbiosis.meta}
             </p>
-            <h3 className="font-display text-3xl font-bold mb-3 text-cyan">
+            <h3 className="font-display text-2xl md:text-3xl font-bold mb-3 text-cyan">
               {t.projects.symbiosis.title}
             </h3>
             <p className="text-sm text-white/70 leading-relaxed mb-4">
@@ -190,18 +203,14 @@ export default function Projects() {
           {sideProjects.map((project, i) => (
             <motion.article
               key={project.id}
-              layoutId={`card-${project.id}`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
               onClick={() => setExpandedId(project.id)}
-              className="glass rounded-2xl overflow-hidden flex flex-col group flex-1 cursor-pointer hover:shadow-glow transition-shadow"
+              className="glass rounded-2xl overflow-hidden flex flex-col group flex-1 cursor-pointer hover:shadow-glow transition-shadow touch-manipulation"
             >
-              <motion.div
-                layoutId={`image-${project.id}`}
-                className="relative aspect-[16/9] overflow-hidden"
-              >
+              <div className="relative aspect-[16/9] overflow-hidden">
                 <Image
                   src={project.image}
                   alt={project.title}
@@ -212,21 +221,15 @@ export default function Projects() {
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              </motion.div>
+              </div>
 
               <div className="p-6 flex flex-col flex-1">
-                <motion.p
-                  layoutId={`meta-${project.id}`}
-                  className="text-[10px] uppercase tracking-[0.2em] text-fg-muted mb-2"
-                >
+                <p className="text-[10px] uppercase tracking-[0.2em] text-fg-muted mb-2">
                   {project.date} - {project.category}
-                </motion.p>
-                <motion.h3
-                  layoutId={`title-${project.id}`}
-                  className="font-display text-xl font-bold mb-3 text-cyan"
-                >
+                </p>
+                <h3 className="font-display text-xl font-bold mb-3 text-cyan">
                   {project.title}
-                </motion.h3>
+                </h3>
                 <p className="text-sm text-fg-soft leading-relaxed mb-4 flex-1 line-clamp-3">
                   {project.desc}
                 </p>
@@ -240,12 +243,16 @@ export default function Projects() {
                     </span>
                   ))}
                 </div>
+                <p className="text-[10px] uppercase tracking-wider text-cyan/70 mt-3">
+                  {lang === "es" ? "Click para leer más →" : "Click to read more →"}
+                </p>
               </div>
             </motion.article>
           ))}
         </div>
       </div>
 
+      {/* EXPANDED PROJECT MODAL — uses scale animation, NO layoutId */}
       <AnimatePresence>
         {expandedProject && (
           <>
@@ -255,27 +262,51 @@ export default function Projects() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
               onClick={() => setExpandedId(null)}
-              className="fixed inset-0 z-40 bg-black/85 backdrop-blur-md"
+              className="fixed inset-0 z-[60] bg-black/85 backdrop-blur-md"
             />
 
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 pointer-events-none">
+            <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 md:p-8 pointer-events-none">
               <motion.div
-                layoutId={`card-${expandedProject.id}`}
-                className="glass rounded-3xl overflow-hidden w-full max-w-5xl max-h-[90vh] flex flex-col pointer-events-auto shadow-glow-lg"
+                initial={{ opacity: 0, scale: 0.92, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.92, y: 20 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className="glass rounded-3xl overflow-hidden w-full max-w-5xl max-h-[95vh] md:max-h-[90vh] flex flex-col pointer-events-auto shadow-glow-lg"
               >
-                <button
-                  onClick={() => setExpandedId(null)}
-                  className="absolute top-4 right-4 z-50 p-2.5 rounded-full bg-black/60 backdrop-blur-sm hover:bg-cyan/20 border border-white/10 transition-all"
-                  aria-label="Cerrar"
-                >
-                  <X className="w-5 h-5 text-white" />
-                </button>
+                {/* Modal control bar */}
+                <div className="absolute top-3 right-3 md:top-4 md:right-4 z-50 flex items-center gap-2">
+                  <button
+                    onClick={handleModalLangToggle}
+                    className="flex items-center gap-1.5 px-3 py-2.5 rounded-full bg-black/60 backdrop-blur-sm hover:bg-cyan/20 border border-white/10 transition-all touch-manipulation"
+                    aria-label="Toggle language"
+                  >
+                    <Languages className="w-4 h-4 text-cyan" />
+                    <AnimatePresence mode="wait">
+                      <motion.span
+                        key={lang}
+                        initial={{ opacity: 0, y: -3 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 3 }}
+                        transition={{ duration: 0.15 }}
+                        className="text-xs uppercase text-white"
+                      >
+                        {lang}
+                      </motion.span>
+                    </AnimatePresence>
+                  </button>
+                  <button
+                    onClick={() => setExpandedId(null)}
+                    className="p-2.5 rounded-full bg-black/60 backdrop-blur-sm hover:bg-cyan/20 border border-white/10 transition-all touch-manipulation"
+                    aria-label="Cerrar"
+                  >
+                    <X className="w-5 h-5 text-white" />
+                  </button>
+                </div>
 
                 <div className="overflow-y-auto">
-                  <motion.div
-                    layoutId={`image-${expandedProject.id}`}
+                  <div
                     className="relative w-full bg-black flex items-center justify-center"
-                    style={{ minHeight: "400px", maxHeight: "55vh" }}
+                    style={{ minHeight: "250px", maxHeight: "55vh" }}
                   >
                     <Image
                       src={expandedProject.image}
@@ -286,47 +317,42 @@ export default function Projects() {
                       className="object-contain"
                       priority
                     />
-                  </motion.div>
+                  </div>
 
-                  <div className="p-8 md:p-12">
-                    <motion.p
-                      layoutId={`meta-${expandedProject.id}`}
-                      className="text-xs uppercase tracking-[0.2em] text-cyan mb-4"
-                    >
-                      {expandedProject.date} - {expandedProject.category}
-                    </motion.p>
+                  <div className="p-6 md:p-12">
+                    {/* Animate text changes when language toggles */}
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={`${expandedProject.id}-${lang}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.25 }}
+                      >
+                        <p className="text-xs uppercase tracking-[0.2em] text-cyan mb-4">
+                          {expandedProject.date} - {expandedProject.category}
+                        </p>
 
-                    <motion.h3
-                      layoutId={`title-${expandedProject.id}`}
-                      className="font-display text-4xl md:text-5xl font-bold mb-6 text-cyan"
-                    >
-                      {expandedProject.title}
-                    </motion.h3>
+                        <h3 className="font-display text-3xl md:text-5xl font-bold mb-6 text-cyan">
+                          {expandedProject.title}
+                        </h3>
 
-                    <motion.p
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3, duration: 0.5 }}
-                      className="text-base md:text-lg text-fg leading-relaxed mb-8"
-                    >
-                      {expandedProject.desc}
-                    </motion.p>
+                        <p className="text-base md:text-lg text-fg leading-relaxed mb-8">
+                          {expandedProject.desc}
+                        </p>
 
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4, duration: 0.5 }}
-                      className="flex flex-wrap gap-3 pt-6 border-t border-white/10"
-                    >
-                      {expandedProject.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-xs px-4 py-2 rounded-full bg-electric/10 text-cyan border border-cyan/30"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </motion.div>
+                        <div className="flex flex-wrap gap-3 pt-6 border-t border-white/10">
+                          {expandedProject.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="text-xs px-4 py-2 rounded-full bg-electric/10 text-cyan border border-cyan/30"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
                 </div>
               </motion.div>
@@ -335,14 +361,15 @@ export default function Projects() {
         )}
       </AnimatePresence>
 
+      {/* EMAIL MODAL (Symbiosis) */}
       <AnimatePresence>
-        {modalOpen && (
+        {emailModalOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setModalOpen(false)}
-            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm"
+            onClick={() => setEmailModalOpen(false)}
+            className="fixed inset-0 z-[70] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm"
           >
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
@@ -350,11 +377,11 @@ export default function Projects() {
               exit={{ scale: 0.9, y: 20 }}
               transition={{ type: "spring", duration: 0.5 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative glass rounded-2xl p-8 max-w-md w-full shadow-glow-lg"
+              className="relative glass rounded-2xl p-6 md:p-8 max-w-md w-full shadow-glow-lg"
             >
               <button
-                onClick={() => setModalOpen(false)}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors"
+                onClick={() => setEmailModalOpen(false)}
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors touch-manipulation"
                 aria-label="Cerrar"
               >
                 <X className="w-5 h-5 text-fg-soft" />
@@ -367,7 +394,7 @@ export default function Projects() {
                 </div>
               </div>
 
-              <h3 className="font-display text-3xl font-bold text-center mb-2 text-cyan">
+              <h3 className="font-display text-2xl md:text-3xl font-bold text-center mb-2 text-cyan">
                 {t.projects.modal.title}
               </h3>
               <p className="text-center text-fg-soft text-sm mb-6">
@@ -385,7 +412,7 @@ export default function Projects() {
                 />
                 <button
                   type="submit"
-                  className="w-full px-6 py-3 rounded-full bg-electric text-white font-medium hover:shadow-glow transition-all flex items-center justify-center gap-2"
+                  className="w-full px-6 py-3 rounded-full bg-electric text-white font-medium hover:shadow-glow transition-all flex items-center justify-center gap-2 touch-manipulation"
                 >
                   <Mail className="w-4 h-4" />
                   {t.projects.modal.button}

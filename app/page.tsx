@@ -1,8 +1,8 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Bio from "@/components/Bio";
-import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
+import Experience from "@/components/Experience";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -12,8 +12,8 @@ export default function Home() {
       <div className="relative z-10">
         <Hero />
         <Bio />
-        <Experience />
         <Projects />
+        <Experience />
         <Footer />
       </div>
     </main>

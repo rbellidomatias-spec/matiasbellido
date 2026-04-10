@@ -50,6 +50,7 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 html,
@@ -58,6 +59,29 @@ body {
   color: var(--fg);
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.4s ease, color 0.4s ease;
+  overflow-x: hidden;
+}
+
+/* MOBILE: Eliminate 300ms tap delay */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Hide scrollbar but keep scroll functional (for horizontal carousels) */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .glass {
@@ -140,4 +164,20 @@ section[id] {
 }
 .text-fg-faint {
   color: var(--fg-faint);
+}
+
+/* Mobile: prevent text from being too small to read */
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+/* Mobile: ensure buttons have minimum touch target */
+@media (max-width: 768px) {
+  button,
+  a[role="button"],
+  .touch-manipulation {
+    min-height: 36px;
+  }
 }

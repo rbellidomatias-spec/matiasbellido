@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { ModalProvider } from "@/context/ModalContext";
 import "./globals.css";
 
 const inter = Inter({
@@ -16,9 +17,15 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Matias Bellido — Optimizing Reality through Data & AI",
+  title: "Matías Bellido — Optimizing Reality through Data & AI",
   description:
-    "Actuario & Data Scientist. Automatizacion, modelos estadisticos y ejecucion con IA.",
+    "Actuario & Data Scientist. Automatización, modelos estadísticos y ejecución con IA.",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
@@ -29,7 +36,9 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning className={`${inter.variable} ${jakarta.variable}`}>
       <body className="font-sans antialiased">
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          <ModalProvider>{children}</ModalProvider>
+        </LanguageProvider>
       </body>
     </html>
   );
