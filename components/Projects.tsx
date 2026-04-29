@@ -11,30 +11,21 @@ import { useModal } from "@/context/ModalContext";
 // ============================================================================
 // PROPOSAL/RESUMEN LINKS — completá manualmente las URLs faltantes
 // ============================================================================
-
-// TODO: Completar URL de propuesta de SymbiosisAI (aún no tenés)
 const SYMBIOSIS_PROPOSAL_URL = "";
-
-// TODO: Completar URL de propuesta de Budgents (aún no tenés)
 const BUDGENTS_PROPOSAL_URL = "";
-
-// TODO: Completar URL de propuesta de NutriOps (aún no tenés)
 const NUTRIOPS_PROPOSAL_URL = "";
-
-// PDF de Bellido Importaciones - ya está en /public/projects/Imagenes/
 const IMPORTS_PROPOSAL_URL = "/projects/Imagenes/Importaciones.pdf";
-
-// Asesoramientos tiene dos links (no un botón simple) - se manejan abajo
 const ASESORAMIENTOS_FITNESS_URL = "https://canva.link/yj6is9jfjf8y3j3";
 const ASESORAMIENTOS_EDUCATION_URL = "https://canva.link/mxh1ejfv32c2en1";
 
+// ORDEN: NutriOps PRIMERO (arriba), Budgents SEGUNDO (abajo)
 const digitalProjectsMeta = [
-  { id: "budgents", image: "/projects/Imagenes/agents.png", tags: ["LLMs", "APIs", "Webhooks", "N8N"], proposalUrl: BUDGENTS_PROPOSAL_URL },
   { id: "nutriops", image: "/projects/Imagenes/solver.png", tags: ["Excel Solver", "Linear Programming", "Web Scraping", "Operations Research"], proposalUrl: NUTRIOPS_PROPOSAL_URL },
+  { id: "budgents", image: "/projects/Imagenes/agents.png", tags: ["LLMs", "APIs", "Webhooks", "N8N"], proposalUrl: BUDGENTS_PROPOSAL_URL },
 ];
 
 const businessProjectsMeta = [
-  { id: "imports", image: "/projects/Imagenes/Imports.png", tags: ["Importaciones", "Negociación", "Logística", "Networking"], proposalUrl: IMPORTS_PROPOSAL_URL },
+  { id: "imports", image: "/projects/Imagenes/Imports.png", tags: ["Importaciones", "USA-LATAM", "Negociación", "Logística"], proposalUrl: IMPORTS_PROPOSAL_URL },
   { id: "asesoramientos", image: "/projects/Imagenes/asesoramientos.png", tags: ["Liderazgo de equipos", "Gestión de clientes", "Mentorías", "Networking"], proposalUrl: "" },
 ];
 
@@ -59,12 +50,10 @@ function RichDescription({ text }: { text: string }) {
   );
 }
 
-// Proposal button - abre link en nueva pestaña o muestra modal si es asesoramientos
 function ProposalButton({ projectId, url, lang, onAsesoramientosClick }: { projectId: string; url: string; lang: string; onAsesoramientosClick: () => void }) {
   const label = lang === "es" ? "Propuesta" : "Proposal";
   const isAsesoramientos = projectId === "asesoramientos";
   const hasUrl = isAsesoramientos || url !== "";
-
   if (!hasUrl) return null;
 
   const handleClick = (e: React.MouseEvent) => {
@@ -93,7 +82,11 @@ export default function Projects() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const lockControls = useAnimation();
 
-  const digitalProjects = digitalProjectsMeta.map((meta) => ({ ...meta, ...(meta.id === "budgents" ? t.projects.budgents : t.projects.nutriops) }));
+  // Lookup explícito por id (no asume orden)
+  const digitalProjects = digitalProjectsMeta.map((meta) => {
+    const content = meta.id === "nutriops" ? t.projects.nutriops : t.projects.budgents;
+    return { ...meta, ...content };
+  });
   const businessProjects = businessProjectsMeta.map((meta) => ({ ...meta, ...(meta.id === "imports" ? t.projects.imports : t.projects.asesoramientos) }));
   const allProjects = [...digitalProjects, ...businessProjects];
 
@@ -144,7 +137,6 @@ export default function Projects() {
         {t.projects.sectionDesc}
       </motion.p>
 
-      {/* SOLUCIONES DIGITALES */}
       <div className="mb-20">
         <div className="flex items-center gap-3 mb-8">
           <Code2 className="w-5 h-5 text-cyan" />
@@ -152,7 +144,6 @@ export default function Projects() {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* SYMBIOSIS */}
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.6 }}
             onClick={handleLockClick}
             className="relative glass rounded-2xl overflow-hidden cursor-pointer group min-h-[500px] lg:min-h-[600px] flex flex-col touch-manipulation">
@@ -195,7 +186,6 @@ export default function Projects() {
         </div>
       </div>
 
-      {/* OPERACIONES DE NEGOCIO */}
       <div>
         <div className="flex items-center gap-3 mb-8">
           <Briefcase className="w-5 h-5 text-cyan" />
@@ -208,7 +198,6 @@ export default function Projects() {
         </div>
       </div>
 
-      {/* EXPANDED MODAL */}
       <AnimatePresence>
         {expandedProject && (
           <>
@@ -248,7 +237,6 @@ export default function Projects() {
         )}
       </AnimatePresence>
 
-      {/* EMAIL MODAL */}
       <AnimatePresence>
         {emailModalOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEmailModalOpen(false)} className="fixed inset-0 z-[70] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm">
@@ -268,15 +256,12 @@ export default function Projects() {
         )}
       </AnimatePresence>
 
-      {/* CANVA MODAL - para Asesoramientos */}
       <AnimatePresence>
         {canvaModalOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setCanvaModalOpen(false)} className="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm">
             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} transition={{ type: "spring", duration: 0.5 }} onClick={(e) => e.stopPropagation()} className="relative glass rounded-2xl p-6 md:p-8 max-w-md w-full shadow-glow-lg">
               <button onClick={() => setCanvaModalOpen(false)} className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors"><X className="w-5 h-5 text-fg-soft" /></button>
-              <h3 className="font-display text-2xl md:text-3xl font-bold text-center mb-6 text-cyan">
-                {lang === "es" ? "Mis Asesoramientos" : "My Services"}
-              </h3>
+              <h3 className="font-display text-2xl md:text-3xl font-bold text-center mb-6 text-cyan">{lang === "es" ? "Mis Asesoramientos" : "My Services"}</h3>
               <div className="space-y-6">
                 <div>
                   <p className="text-lg font-semibold text-cyan mb-2">{lang === "es" ? "Asesoramientos Fitness" : "Fitness Coaching"}</p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Menu, X, Languages, Sun, Moon } from "lucide-react";
@@ -13,6 +13,8 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [isDark, setIsDark] = useState(true);
+  // Flag para ignorar scroll spy mientras hacemos scroll programático (al click)
+  const ignoreScrollSpy = useRef(false);
 
   // ORDEN CORRECTO: Inicio → Habilidades → Proyectos → Experiencia → Contacto
   const navItems = [
@@ -44,25 +46,64 @@ export default function Header() {
     }
   };
 
-  // Scroll spy
+  // Scroll spy MEJORADO - elige la sección que ocupa más viewport
   useEffect(() => {
     const handleScroll = () => {
-      const sections = navItems.map((item) => item.id);
-      const scrollPos = window.scrollY + 200;
+      if (ignoreScrollSpy.current) return;
 
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const element = document.getElementById(sections[i]);
-        if (element && element.offsetTop <= scrollPos) {
-          setActiveSection(sections[i]);
-          break;
+      const scrollY = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      const viewportCenter = scrollY + viewportHeight / 2;
+
+      // Si estamos cerca del tope absoluto, siempre Home
+      if (scrollY < 100) {
+        setActiveSection("home");
+        return;
+      }
+
+      // Si estamos cerca del fondo absoluto, siempre Contact
+      const documentHeight = document.documentElement.scrollHeight;
+      if (scrollY + viewportHeight >= documentHeight - 50) {
+        setActiveSection("contact");
+        return;
+      }
+
+      // Para todo el medio: la sección activa es aquella cuyo CENTRO
+      // está más cerca del centro del viewport
+      let bestSection = "home";
+      let smallestDistance = Infinity;
+
+      for (const item of navItems) {
+        const element = document.getElementById(item.id);
+        if (!element) continue;
+
+        const rect = element.getBoundingClientRect();
+        const elementTop = scrollY + rect.top;
+        const elementCenter = elementTop + rect.height / 2;
+        const distance = Math.abs(elementCenter - viewportCenter);
+
+        if (distance < smallestDistance) {
+          smallestDistance = distance;
+          bestSection = item.id;
         }
       }
+
+      setActiveSection(bestSection);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    handleScroll(); // run once on mount
     return () => window.removeEventListener("scroll", handleScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Cuando hacés click en un nav link, fijamos la sección activa inmediatamente
+  // y deshabilitamos el scroll spy por un momento para evitar flicker
+  const handleNavClick = (id: string) => {
+    setActiveSection(id);
+    ignoreScrollSpy.current = true;
+    setTimeout(() => { ignoreScrollSpy.current = false; }, 800);
+  };
 
   const handleLangToggle = () => setLang(lang === "es" ? "en" : "es");
 
@@ -79,7 +120,7 @@ export default function Header() {
           <div className="max-w-7xl mx-auto">
             <div className="glass rounded-full px-4 md:px-6 py-2.5 flex items-center justify-between">
               {/* Logo */}
-              <Link href="#home" className="font-display text-xl font-bold text-cyan tracking-tight">
+              <Link href="#home" onClick={() => handleNavClick("home")} className="font-display text-xl font-bold text-cyan tracking-tight">
                 MB.
               </Link>
 
@@ -89,7 +130,8 @@ export default function Header() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    onClick={() => handleNavClick(item.id)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all relative ${
                       activeSection === item.id
                         ? "text-cyan"
                         : "text-fg-soft hover:text-cyan"
@@ -99,16 +141,16 @@ export default function Header() {
                     {activeSection === item.id && (
                       <motion.div
                         layoutId="activeSection"
-                        className="h-0.5 bg-cyan rounded-full mt-0.5"
+                        className="absolute bottom-0 left-2 right-2 h-0.5 bg-cyan rounded-full"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
                       />
                     )}
                   </Link>
                 ))}
               </nav>
 
-              {/* Right side: lang + theme + mobile menu */}
+              {/* Right side */}
               <div className="flex items-center gap-2">
-                {/* Lang toggle */}
                 <button
                   onClick={handleLangToggle}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-cyan/10 transition-colors touch-manipulation"
@@ -129,7 +171,6 @@ export default function Header() {
                   </AnimatePresence>
                 </button>
 
-                {/* Theme toggle */}
                 <button
                   onClick={toggleTheme}
                   className="p-2 rounded-full hover:bg-cyan/10 transition-colors touch-manipulation"
@@ -137,45 +178,27 @@ export default function Header() {
                 >
                   <AnimatePresence mode="wait">
                     {isDark ? (
-                      <motion.div
-                        key="sun"
-                        initial={{ rotate: -90, opacity: 0 }}
-                        animate={{ rotate: 0, opacity: 1 }}
-                        exit={{ rotate: 90, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
+                      <motion.div key="sun" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
                         <Sun className="w-4 h-4 text-cyan" />
                       </motion.div>
                     ) : (
-                      <motion.div
-                        key="moon"
-                        initial={{ rotate: 90, opacity: 0 }}
-                        animate={{ rotate: 0, opacity: 1 }}
-                        exit={{ rotate: -90, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
+                      <motion.div key="moon" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
                         <Moon className="w-4 h-4 text-cyan" />
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </button>
 
-                {/* Mobile menu button */}
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                   className="md:hidden p-2 rounded-full hover:bg-cyan/10 transition-colors touch-manipulation"
                   aria-label="Toggle menu"
                 >
-                  {mobileMenuOpen ? (
-                    <X className="w-5 h-5 text-cyan" />
-                  ) : (
-                    <Menu className="w-5 h-5 text-cyan" />
-                  )}
+                  {mobileMenuOpen ? <X className="w-5 h-5 text-cyan" /> : <Menu className="w-5 h-5 text-cyan" />}
                 </button>
               </div>
             </div>
 
-            {/* Mobile menu */}
             <AnimatePresence>
               {mobileMenuOpen && (
                 <motion.nav
@@ -189,11 +212,9 @@ export default function Header() {
                     <Link
                       key={item.href}
                       href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
+                      onClick={() => { setMobileMenuOpen(false); handleNavClick(item.id); }}
                       className={`px-4 py-3 rounded-full text-sm font-medium transition-all ${
-                        activeSection === item.id
-                          ? "bg-cyan/10 text-cyan"
-                          : "text-fg-soft hover:bg-white/5"
+                        activeSection === item.id ? "bg-cyan/10 text-cyan" : "text-fg-soft hover:bg-white/5"
                       }`}
                     >
                       {item.label}
